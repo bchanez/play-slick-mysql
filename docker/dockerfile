@@ -18,6 +18,6 @@ RUN \
 WORKDIR /project
 ADD . /project
 
-EXPOSE 8080
+EXPOSE 9000
 
-CMD sbt compile run
+CMD sbt run

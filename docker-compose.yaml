@@ -43,7 +43,7 @@ services:
     build:
       context: ./docker
     ports:
-      - "8080:8080"
+      - "8080:9000"
     volumes:
       - "./:/project"
     networks:
