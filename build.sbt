@@ -1,5 +1,4 @@
-name         := "play-gcp-101"
-scalaVersion := "3.1.1"
+scalaVersion := "2.13.8"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 

@@ -39,11 +39,12 @@ services:
     container_name: sbt
     depends_on:
       - db
+    image: sbt
     build:
       context: ./docker
     ports:
       - "8080:8080"
     volumes:
-      - "./:/root/build"
+      - "./:/project"
     networks:
       - main
