@@ -6,20 +6,23 @@ volumes:
   db_data:
 
 services:
+
   db:
+    container_name: mysql
     image: mysql:8.0
     restart: always
     volumes:
       - db_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: scala
-      MYSQL_USER: scala
-      MYSQL_PASSWORD: scala
+      MYSQL_DATABASE: play-slick
+      MYSQL_USER: play-slick
+      MYSQL_PASSWORD: play-slick
     networks:
       - main
 
   phpmyadmin:
+    container_name: phpmyadmin
     depends_on:
       - db
     image: phpmyadmin/phpmyadmin
@@ -32,7 +35,15 @@ services:
     networks:
       - main
 
-  scala:
-    image: hseeberger/scala-sbt
+  sbt:
+    container_name: sbt
+    depends_on:
+      - db
+    build:
+      context: ./docker
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./:/root/build"
     networks:
       - main

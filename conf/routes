@@ -1,0 +1,1 @@
+GET     /stocks    controllers.StocksController.list

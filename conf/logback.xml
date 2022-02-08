@@ -1,0 +1,2 @@
+<!-- this can help to understand with database, connections, mysql, and hikari errors -->
+<logger name="com.zaxxer.hikari" level="DEBUG" />
