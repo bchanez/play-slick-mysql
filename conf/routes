@@ -1,0 +1,5 @@
+POST    /person                     controllers.PersonController.addPerson
+GET     /person/all                 controllers.PersonController.getPersonList
+GET     /person/:id                 controllers.PersonController.getPerson(id: Long)
+PUT     /person                     controllers.PersonController.updatePerson
+DELETE  /person/:id                 controllers.PersonController.deletePerson(id: Long)
