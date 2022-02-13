@@ -7,9 +7,16 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject() (val controllerComponents: ControllerComponents)
+    extends BaseController {
 
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+    Ok(
+      "POST    /person    \n"
+        + "PUT     /person    \n"
+        + "DELETE  /person/:id\n"
+        + "GET     /person/:id\n"
+        + "GET     /person/all\n"
+    )
   }
 }

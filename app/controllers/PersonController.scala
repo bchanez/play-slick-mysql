@@ -1,7 +1,6 @@
 package controllers
 
 import javax.inject._
-
 import models.Person
 import repositories.PersonRepository
 import play.api.data.Form
@@ -10,9 +9,9 @@ import play.api.data.validation.Constraints._
 import play.api.i18n._
 import play.api.libs.json.Json
 import play.api.mvc._
+import scala.concurrent.{Future, ExecutionContext}
 
-import scala.concurrent.ExecutionContext
-
+@Singleton
 class PersonController @Inject() (
     personRepo: PersonRepository,
     cc: MessagesControllerComponents
@@ -34,23 +33,43 @@ class PersonController @Inject() (
           Future.successful(Ok(views.html.index(errorForm)))
         },
         person => {
-          personRepo.insert(person.firstName, person.lastName).map { _ =>
-            Redirect(routes.PersonController.index)
-              .flashing("success" -> "a person has been inserted")
+          personRepo.insert(person.firstName, person.lastName).map { person =>
+            Ok(person.firstName + " " + person.lastName + " added")
           }
         }
       )
   }
 
-  def updatePerson {}
+  // def updatePerson = Action.async { implicit request =>
+  //   personForm
+  //     .bindFromRequest()
+  //     .fold(
+  //       errorForm => {
+  //         Future.successful(Ok(views.html.index(errorForm)))
+  //       },
+  //       person => {
+  //         personRepo.update(person.id, person.firstName, person.lastName).map {
+  //           _ =>
+  //             Redirect(routes.PersonController.index)
+  //               .flashing("success" -> "a person has been updated")
+  //         }
+  //       }
+  //     )
+  // }
 
-  def deletePerson {}
+  // // todo
+  // def deletePerson = Action { implicit request: Request[AnyContent] =>
+  //   Ok(views.html.index())
+  // }
 
-  def getPerson{}
+  // // todo
+  // def getPerson = Action { implicit request: Request[AnyContent] =>
+  //   Ok(views.html.index())
+  // }
 
   def getAllPerson = Action.async { implicit request =>
-    personRepo.list().map { people =>
-      Ok(Json.toJson(people))
+    personRepo.list().map { person =>
+      Ok(Json.toJson(person))
     }
   }
 }

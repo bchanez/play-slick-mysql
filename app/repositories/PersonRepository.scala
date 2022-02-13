@@ -4,7 +4,7 @@ import models.Person
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{Future, ExecutionContext}
 
 @Singleton
 class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(
@@ -15,7 +15,7 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(
   import dbConfig._
   import profile.api._
 
-  private class PeopleTable(tag: Tag) extends Table[Person](tag, "people") {
+  private class PersonTable(tag: Tag) extends Table[Person](tag, "PERSON") {
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
     def firstName = column[String]("FIRST_NAME")
     def lastName = column[String]("LAST_NAME")
@@ -24,24 +24,23 @@ class PersonRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(
       (id, firstName, lastName) <> ((Person.apply _).tupled, Person.unapply)
   }
 
-  // TODO why people ?
-  private val people = TableQuery[PeopleTable]
+  private val personTable = TableQuery[PersonTable]
 
   def insert(firstName: String, lastName: String): Future[Person] = db.run {
-    (people.map(p => (p.firstName, p.lastName))
-      returning people.map(_.id)
+    (personTable.map(p => (p.firstName, p.lastName))
+      returning personTable.map(_.id)
       into ((firstName_lastName, id) =>
         Person(id, firstName_lastName._1, firstName_lastName._2)
       )) += (firstName, lastName)
   }
 
-  def update() {}
+  // def update(){}
 
-  def delete() {}
+  // def delete(){}
 
-  def get() {}
+  // def get(){}
 
   def list(): Future[Seq[Person]] = db.run {
-    people.result
+    personTable.result
   }
 }
