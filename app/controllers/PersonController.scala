@@ -1,77 +1,68 @@
 package controllers
 
-import javax.inject._
-import models.Person
-import repositories.PersonRepository
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
-import play.api.i18n._
-import play.api.libs.json.Json
+import dao.PersonDAO
+import javax.inject.Inject
+import models.{Person, PersonForm}
 import play.api.mvc._
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import play.api.Logging
 
 @Singleton
 class PersonController @Inject() (
-    personRepo: PersonRepository,
-    cc: MessagesControllerComponents
-)(implicit ec: ExecutionContext)
-    extends MessagesAbstractController(cc) {
-
-  val personForm: Form[CreatePersonForm] = Form {
-    mapping(
-      "firstName" -> nonEmptyText,
-      "lastName" -> nonEmptyText
-    )(CreatePersonForm.apply)(CreatePersonForm.unapply)
-  }
+    personDAO: PersonDAO,
+    mcc: MessagesControllerComponents
+)(implicit executionContext: ExecutionContext)
+    extends MessagesAbstractController(mcc) with Logging  {
 
   def insertPerson = Action.async { implicit request =>
-    personForm
+    PersonForm.form
       .bindFromRequest()
       .fold(
         errorForm => {
+          logger.warn(s"Form submission with error: ${errorForm.errors}")
           Future.successful(Ok(views.html.index(errorForm)))
         },
-        person => {
-          personRepo.insert(person.firstName, person.lastName).map { person =>
-            Ok(person.firstName + " " + person.lastName + " added")
+        data => {
+          val newPerson = Person(0, data.firstName, data.lastName)
+          personDAO.insert(newPerson).map { person =>
+            Ok(Json.toJson(person))
           }
         }
       )
   }
 
-  // def updatePerson = Action.async { implicit request =>
-  //   personForm
-  //     .bindFromRequest()
-  //     .fold(
-  //       errorForm => {
-  //         Future.successful(Ok(views.html.index(errorForm)))
-  //       },
-  //       person => {
-  //         personRepo.update(person.id, person.firstName, person.lastName).map {
-  //           _ =>
-  //             Redirect(routes.PersonController.index)
-  //               .flashing("success" -> "a person has been updated")
-  //         }
-  //       }
-  //     )
-  // }
+  def updatePerson = Action.async { implicit request =>
+    PersonForm.form
+      .bindFromRequest()
+      .fold(
+        errorForm => {
+          logger.warn(s"Form submission with error: ${errorForm.errors}")
+          Future.successful(Ok(views.html.index(errorForm)))
+        },
+        data => {
+          val newPerson = Person(0, data.firstName, data.lastName)
+          personDAO.update(newPerson).map { person =>
+            Ok(Json.toJson(person))
+          }
+        }
+      )
+  }
 
-  // // todo
-  // def deletePerson = Action { implicit request: Request[AnyContent] =>
-  //   Ok(views.html.index())
-  // }
+  def deletePerson(id: Long) = Action { implicit request: Request[AnyContent] =>
+    personDAO.delete(id) map { res =>
+      Ok("person with ID " + id + " deleted")
+    }
+  }
 
-  // // todo
-  // def getPerson = Action { implicit request: Request[AnyContent] =>
-  //   Ok(views.html.index())
-  // }
+  def getPerson(id: Long) = Action { implicit request: Request[AnyContent] =>
+    personDAO.get(id).map { person =>
+      Ok(Json.toJson(person))
+    }
+  }
 
   def getAllPerson = Action.async { implicit request =>
-    personRepo.list().map { person =>
+    personDAO.list().map { person =>
       Ok(Json.toJson(person))
     }
   }
 }
-
-case class CreatePersonForm(firstName: String, lastName: String)
