@@ -18,7 +18,7 @@
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF" />
 
   <!-- more log for db -->
-  <logger name="com.zaxxer.hikari" level="DEBUG" />
+  <!-- <logger name="com.zaxxer.hikari" level="DEBUG" /> -->
 
   <root level="ERROR">
     <appender-ref ref="STDOUT" />

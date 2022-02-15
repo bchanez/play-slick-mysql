@@ -7,8 +7,8 @@ volumes:
 
 services:
 
-  db:
-    container_name: mysql
+  database:
+    container_name: database
     image: mysql:8.0
     restart: always
     volumes:
@@ -24,13 +24,13 @@ services:
   phpmyadmin:
     container_name: phpmyadmin
     depends_on:
-      - db
+      - database
     image: phpmyadmin/phpmyadmin
     restart: always
     ports:
       - '8081:80'
     environment:
-      PMA_HOSTS: db
+      PMA_HOSTS: database
       MYSQL_ROOT_PASSWORD: password
     networks:
       - main
@@ -38,7 +38,7 @@ services:
   sbt:
     container_name: sbt
     depends_on:
-      - db
+      - database
     image: sbt
     build:
       context: ./docker

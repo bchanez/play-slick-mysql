@@ -1,0 +1,26 @@
+###
+POST http://localhost:8080/person
+Content-Type: application/json
+
+{
+  "firstName" : "jean",
+  "lastName" : "dupont"
+}
+
+###
+PUT http://localhost:8080/person/1
+Content-Type: application/json
+
+{
+  "firstName" : "jeanEdit",
+  "lastName" : "dupontEdit"
+}
+
+###
+GET http://localhost:8080/person/1
+
+###
+GET http://localhost:8080/person/all
+
+###
+DELETE http://localhost:8080/person/1

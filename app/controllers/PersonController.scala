@@ -26,10 +26,7 @@ class PersonController @Inject() (
         person => {
           for {
             _ <- personDAO.insert(person)
-          } yield Ok("person %s %s has been added"
-              .format(person.firstName)
-              .format(person.lastName)
-          )
+          } yield Ok(s"person '${person.firstName} ${person.lastName}' has been added")
         }
       )
   }
@@ -45,9 +42,7 @@ class PersonController @Inject() (
         person => {
           for {
             _ <- personDAO.update(id, person)
-          } yield Ok("person %s %s has been updated"
-              .format(person.firstName)
-              .format(person.lastName)
+          } yield Ok(s"person '${person.firstName} ${person.lastName}' has been updated"
           )
         }
       )
@@ -56,7 +51,7 @@ class PersonController @Inject() (
   def deletePerson(id: Long) = Action.async { implicit request: Request[AnyContent] =>
     for {
       _ <- personDAO.delete(id)
-    } yield Ok("person with ID %s deleted".format(id))
+    } yield Ok(s"person with ID '${id}' has been deleted")
   }
 
   def getPerson(id: Long) = Action.async { implicit request: Request[AnyContent] =>

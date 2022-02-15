@@ -12,8 +12,8 @@ class HomeController @Inject() (val controllerComponents: ControllerComponents)
 
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(
-      "POST    /person    \n"
-        + "PUT     /person    \n"
+      "POST    /person\n"
+        + "PUT     /person/:id\n"
         + "DELETE  /person/:id\n"
         + "GET     /person/:id\n"
         + "GET     /person/all\n"
