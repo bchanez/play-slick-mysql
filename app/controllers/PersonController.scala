@@ -4,15 +4,16 @@ import dao.PersonDAO
 import javax.inject.Inject
 import models.{Person, PersonForm}
 import play.api.mvc._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import play.api.Logging
+import play.api.libs.json.Json
 
-@Singleton
 class PersonController @Inject() (
     personDAO: PersonDAO,
-    mcc: MessagesControllerComponents
+    controllerComponents: ControllerComponents
 )(implicit executionContext: ExecutionContext)
-    extends MessagesAbstractController(mcc) with Logging  {
+    extends AbstractController(controllerComponents)
+    with Logging {
 
   def insertPerson = Action.async { implicit request =>
     PersonForm.form
@@ -20,41 +21,45 @@ class PersonController @Inject() (
       .fold(
         errorForm => {
           logger.warn(s"Form submission with error: ${errorForm.errors}")
-          Future.successful(Ok(views.html.index(errorForm)))
+          Future.successful(Ok("bad request"))
         },
-        data => {
-          val newPerson = Person(0, data.firstName, data.lastName)
-          personDAO.insert(newPerson).map { person =>
-            Ok(Json.toJson(person))
-          }
+        person => {
+          for {
+            _ <- personDAO.insert(person)
+          } yield Ok("person %s %s has been added"
+              .format(person.firstName)
+              .format(person.lastName)
+          )
         }
       )
   }
 
-  def updatePerson = Action.async { implicit request =>
+  def updatePerson(id: Long) = Action.async { implicit request =>
     PersonForm.form
       .bindFromRequest()
       .fold(
         errorForm => {
           logger.warn(s"Form submission with error: ${errorForm.errors}")
-          Future.successful(Ok(views.html.index(errorForm)))
+          Future.successful(Ok("bad request"))
         },
-        data => {
-          val newPerson = Person(0, data.firstName, data.lastName)
-          personDAO.update(newPerson).map { person =>
-            Ok(Json.toJson(person))
-          }
+        person => {
+          for {
+            _ <- personDAO.update(id, person)
+          } yield Ok("person %s %s has been updated"
+              .format(person.firstName)
+              .format(person.lastName)
+          )
         }
       )
   }
 
-  def deletePerson(id: Long) = Action { implicit request: Request[AnyContent] =>
-    personDAO.delete(id) map { res =>
-      Ok("person with ID " + id + " deleted")
-    }
+  def deletePerson(id: Long) = Action.async { implicit request: Request[AnyContent] =>
+    for {
+      _ <- personDAO.delete(id)
+    } yield Ok("person with ID %s deleted".format(id))
   }
 
-  def getPerson(id: Long) = Action { implicit request: Request[AnyContent] =>
+  def getPerson(id: Long) = Action.async { implicit request: Request[AnyContent] =>
     personDAO.get(id).map { person =>
       Ok(Json.toJson(person))
     }

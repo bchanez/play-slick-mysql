@@ -3,7 +3,7 @@ GET     /                           controllers.HomeController.index()
 
 # person
 POST    /person                     controllers.PersonController.insertPerson()
-PUT     /person                     controllers.PersonController.updatePerson()
+PUT     /person/:id                 controllers.PersonController.updatePerson(id: Long)
 DELETE  /person/:id                 controllers.PersonController.deletePerson(id: Long)
 GET     /person/:id                 controllers.PersonController.getPerson(id: Long)
 GET     /person/all                 controllers.PersonController.getAllPerson()
